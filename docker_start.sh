@@ -1,1 +1,0 @@
-docker run -dp 8477:8787 -e USER=lorenzo -e PASSWORD=lorenzo --name clinical_match_docker -v /mnt/e/Documents/Sciebo/GitHub\ -\ Lorenzo/clinical_match/:/home/lorenzo/data/ bioconductor/bioconductor_docker:RELEASE_3_13
