@@ -12,7 +12,7 @@ The only information you need to provide are:<br/>
 *randomize_numeric*: numeric metadata to randomize, must be a column in input.<br/>
 *randomize_categorical*: categorical metadata to randomize, must be a column in input.<br/>
 
-The randomization will stop automatically after a certain time. If you want to choose a specific amount of perumations, you can use the *n_perm* parameter. 
+The randomization will stop automatically after a certain time. If you want to choose a specific amount of permutations, you can use the *n_perm* parameter. 
 
 ## plate desing (optional)
 
