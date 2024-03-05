@@ -14,7 +14,7 @@ The only information you need to provide are:<br/>
 
 The randomization will stop automatically after a certain time. If you want to choose a specific amount of permutations, you can use the *n_perm* parameter. 
 
-## plate desing (optional)
+## plate design (optional)
 
 The randomization script above is mostly used for bulk RNA-seq experiments. It would be nice to have 96-well plate layout, as the samples will be processed in that manner. This helps the handling person in the lab and gives a nice overview.
 
