@@ -1,0 +1,146 @@
+---
+title: "randomization and plate design script (bulk) RNAseq"
+author: "Lorenzo Bonaguro & Rainer Knoll"
+date: "05 3 2024"
+output: html_document
+---
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 0. Introduction
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+This script can be used to randomize a data table for a selection of metadata information. This is especially useful for large bulk RNAseq experiments and reduces batch effects. In addition to the randomization, samples are also ordered onto a 96-well plate. 
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 1. packages and functions
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## functions
+
+functions for this script are stored in the *function_randomization_plate_design.R* script. 
+
+```{r}
+source(file = "./source/functions_randomization_plate_design.R")
+```
+
+## packages
+
+```{r}
+library(ggplot2)
+library(readr)
+library(readxl)
+library(openxlsx)
+```
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 2. data preparation
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Load your dataframe with the information for randomization into R as *input_data*. Here, we load an example dataset, which contains the information about:
+
+- donor
+- center
+- sex
+- age
+
+The variables center, sex and age should be randomized to avoid batch effects. 
+
+```{r}
+input_data <- read.csv("./source/example_data.csv")
+input_data
+```
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 3. randomization
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## performing the randomization
+
+The randomization is performed with the *randomize_data* function. Please carefully select your parameters for randomization. 
+
+- input: your input data
+- n_samples_per_batch: number of samples in each batch. E.g. 24 samples per RNA extraction batch is common. 
+- n_batches: amount of extraction rounds (if empty: default is the rounded result from total n samples divided by n_samples_per_batch)
+- randomize_numeric: numeric metadata to randomize, must be a column in input.
+- randomize_categorical: categorical metadata to randomize, must be a column in input.
+- reproducible: if TRUE, enables reproducibility using seed.
+- n_perm: numeric input, if not specified automated best selection.
+
+```{r}
+random_data <- randomize_data(input = input_data,
+                               n_samples_per_batch = 24,
+                               n_batches = 8, # nrow(input_data)/n_samples_per_batch, if NULL calculates automatically
+                               randomize_numeric = c("age"),
+                               randomize_categorical = c("center", "sex"),
+                               reproducible = T, # if FALSE, the function will perform differently every time (number of perumations required)
+                               n_perm = NULL) # NULL = automatic, else use numeric value for number of permutations, e.g. 1e+06
+```
+
+the final output of the function will contain the data in randomized order with annotation of the batches with n_samples_per_batch as previously selected.
+
+```{r}
+random_data
+```
+
+## visualizing results
+
+TO visualize the randomized results, some plots are useful. We look at the distribution of the previously selected variables in the randomized data.
+
+If you are unhappy, you can try to increase the number of permutations. 
+
+### numeric variables
+
+```{r}
+plot_numeric(random_data = random_data, randomize_numeric = "age")
+```
+
+### categorical variables
+
+```{r}
+plot_categorical(random_data = random_data, randomize_categorical = "sex")
+plot_categorical(random_data = random_data, randomize_categorical = "center")
+```
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 4. plate design (optional)
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+We nicely randomized our dataset, which can be sufficient for some purposes. In the case of bulk RNAseq, it would be nice to have 96-well plate layout, as the samples will be processed in that manner. This helps the handling person in the lab and gives a nice overview.
+
+Please choose which labels should be put on the 96-well plate distribution. E.g. randomized order and donor ID are important. After randomization, a LAB ID might be generated which should be added to the dataframe and is quite useful in the 96-well plate overview. 
+
+Here, a random LAB ID is generated (usually they have 5 digits).
+
+```{r}
+# add LAB ID to dataset (multiple options, e.g. read new dataframe, match, merge, ...)
+random_data$LAB_ID <- seq(30000, 30000-1+nrow(random_data), 1)
+```
+
+An excel sheet in 96-well plate format will be created using the *create_plate_design* function. Please state which variables should be listed on the plate, here we use the randomized_order, donor and PRECISE_ID, which will look e.g. like this:
+1 donor_38 30000. Please also state the path/name of your xlsx file. 
+
+The resulting xlsx file has the plate in the respective sheets and is colored by 24-batches (column-wise).
+
+```{r}
+create_plate_design(random_data = random_data, 
+                    variables_to_include = c("randomized_order", "donor", "LAB_ID"), 
+                    path = "plate_design.xlsx")
+```
+
+
+
+
+
+
