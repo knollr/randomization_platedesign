@@ -175,14 +175,14 @@ my_colors <- c("#89C5DA", "#DA5724", "#74D944", "#CE50CA", "#3F4921", "#C0717C",
 
 
 create_plate_design <- function(random_data = random_data, 
-                                variables_to_include = c("randomized_order", "donor", "LAB_ID"),
+                                variables_to_include = c("randomized_order", "donor", "PRECISE_ID"),
                                 path = "plate_design.xlsx"){
   
   tmp <- random_data
-  tmp$sample_num_plate <- rep(1:96, round(nrow(tmp)/96))[1:nrow(tmp)]
+  tmp$sample_num_plate <- rep(1:96, ceiling(nrow(tmp)/96))[1:nrow(tmp)]
   
   c_all <- vector()
-  for(i in 1:c(round(nrow(tmp)/96))){
+  for(i in 1:c(ceiling(nrow(tmp)/96))){
     c_tmp <- rep(i, 96)
     c_all <- c(c_all, c_tmp)
   }
@@ -244,11 +244,11 @@ create_plate_design <- function(random_data = random_data,
              gridExpand = T, cols = 1:13, rows = 1:13)
     
     addStyle(wb, sheet = df_name, style = createStyle(fgFill = "#a9a9a9", halign = "center", valign = "center", fontSize = 12, wrapText = T, border = c("top", "bottom", "left", "right")), 
-             rows = 2:9, cols = c(4, 5, 8, 9, 12, 13), gridExpand = T)
+             rows = 2:9, cols = c(5, 6, 7, 11, 12, 13), gridExpand = T)
     
     # Fill certain cells with grey color
     addStyle(wb, sheet = df_name, style = createStyle(fgFill = "#D3D3D3", halign = "center", valign = "center", fontSize = 12, wrapText = T, border = c("top", "bottom", "left", "right")), 
-             rows = 2:9, cols = c(2, 3, 6, 7, 10, 11), gridExpand = T)
+             rows = 2:9, cols = c(2, 3, 4, 8, 9, 10), gridExpand = T)
     
     setColWidths(wb, sheet = df_name, cols = 1:ncol(df)+1, widths = 17.15)
     
