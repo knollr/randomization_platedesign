@@ -68,7 +68,7 @@ randomize_data <- function(input = input_data,
     if(!is.null(n_perm)) if(permut == n_perm) break # This is because is not possible to set a for loop to infinite, in this case I need the repeat function with a break rule
     
     # Generate a new random order of the data
-    random_order <- sample(seq(1:dim(input)[1]), dim(input), replace = FALSE)
+    random_order <- sample(seq(1:dim(input)[1]), nrow(input), replace = FALSE)
     # Adding the new groups to the data table with the new order
     new_data <- input[random_order, ]
     new_data$new_groups <- new_groups # This is the new grouping which we should test
